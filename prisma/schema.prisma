@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum PostType {
+  ARTIGO
+  MATERIAL
+  AULA
+  PALESTRA
+  PODCAST
+  OUTRO
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ContentFormat {
+  HTML
+  MARKDOWN
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  posts       Post[]
+}
+
+model Author {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  bio       String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  posts     Post[]
+}
+
+model Post {
+  id            String        @id @default(cuid())
+  title         String
+  slug          String        @unique
+  excerpt       String?
+  content       String
+  contentFormat ContentFormat @default(HTML)
+  coverImage    String?
+  type          PostType      @default(ARTIGO)
+  status        PostStatus    @default(DRAFT)
+  publishedAt   DateTime?
+  categoryId    String
+  category      Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  authorId      String
+  author        Author        @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([status, publishedAt])
+}
