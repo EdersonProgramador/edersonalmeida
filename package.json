@@ -15,7 +15,9 @@
     "build:web": "npm run build --workspace @edersonalmeida/web",
     "vercel-build": "npm run build:web",
     "build:api:render": "npm run prisma:generate --workspace @edersonalmeida/api && npm run build --workspace @edersonalmeida/api",
-    "start:api": "npm run start --workspace @edersonalmeida/api",
+    "start": "npm run start:render",
+    "start:render": "npm run prisma:deploy --workspace=@edersonalmeida/api && npm run prisma:seed --workspace=@edersonalmeida/api && npm run start --workspace=@edersonalmeida/api",
+    "start:api": "npm run start --workspace @edpersonalmeida/api",
     "prisma:generate": "npm run prisma:generate --workspace @edersonalmeida/api",
     "prisma:migrate": "npm run prisma:migrate --workspace @edersonalmeida/api",
     "prisma:seed": "npm run prisma:seed --workspace @edersonalmeida/api"
