@@ -40,9 +40,12 @@ export async function saveUploadedImage(file: File): Promise<string> {
 
   const name = `${randomUUID()}.${ext}`;
   const dir = uploadDirectory();
-  await mkdir(dir, { recursive: true });
+  const filePath = process.env.UPLOAD_DIR
+    ? path.join(/* turbopackIgnore: true */ dir, name)
+    : path.join(process.cwd(), "public", "uploads", name);
+  await mkdir(path.dirname(filePath), { recursive: true });
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(dir, name), buffer);
+  await writeFile(filePath, buffer);
 
   if (process.env.UPLOAD_DIR) {
     return `/api/files/${name}`;
