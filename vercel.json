@@ -1,12 +1,7 @@
 {
   "framework": "nextjs",
-  "buildCommand": "npx prisma migrate deploy && prisma generate && next build",
+  "buildCommand": "npx prisma migrate deploy && npx prisma db seed && prisma generate && next build",
   "env": {
-    "DATABASE_URL": "file:./prisma/data.db"
-  },
-  "build": {
-    "env": {
-      "DATABASE_URL": "file:./prisma/.vercel-build.db"
-    }
+    "DATABASE_URL": "file:./data.db"
   }
 }

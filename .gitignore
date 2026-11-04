@@ -37,8 +37,6 @@ yarn-error.log*
 # sqlite
 /prisma/*.db
 /prisma/*.db-journal
-/prisma/.vercel-build.db
-/prisma/.vercel-build.db-journal
 
 /public/uploads/*
 !/public/uploads/.gitkeep
