@@ -1,61 +1,58 @@
 # Portal de publicações — Ederson Almeida
 
-Sistema de blog e CMS para **Direito** e temas diversos: site público + painel admin (categorias estilo WordPress, publicações por tipo).
+Monorepo no mesmo padrão da agência / Atlly:
+
+- **Vercel** — SPA **Vite + React** (`apps/web`)
+- **Render** — **Fastify** + **PostgreSQL** + Prisma (`apps/api`)
+
+Site público + admin (JWT, editor WYSIWYG, categorias, autores, upload).
 
 ## Requisitos
 
 - Node.js 20+
-- npm
+- PostgreSQL local (ou URL remota) para a API
 
 ## Configuração local
 
-1. Copie `.env.example` para `.env` e ajuste:
+1. Copie `.env.example` para `.env` na raiz (a API carrega `../../.env` em dev).
 
-   - `ADMIN_EMAIL` / `ADMIN_PASSWORD` — login do painel (`/admin`)
-   - `SESSION_SECRET` — string aleatória com pelo menos 32 caracteres
-   - `DATABASE_URL` — `file:./dev.db` (SQLite na pasta `prisma/`)
-
-2. Banco e seed:
+2. Instale e migre:
 
 ```bash
 npm install
-npm run db:migrate
-npm run db:seed
+npm run prisma:generate
+npm run prisma:migrate
+npm run prisma:seed
 ```
 
-3. Desenvolvimento:
+3. Suba web + API:
 
 ```bash
 npm run dev
 ```
 
-- Site: [http://localhost:3000](http://localhost:3000)
-- Admin: [http://localhost:3000/admin](http://localhost:3000/admin)
+- Site: [http://localhost:5175](http://localhost:5175)
+- API: [http://localhost:3333/health](http://localhost:3333/health)
+- Admin: [http://localhost:5175/admin](http://localhost:5175/admin) (login = `ADMIN_EMAIL` / `ADMIN_PASSWORD`)
 
-## Fluxo de conteúdo
+Em dev, o Vite faz proxy de `/public`, `/admin`, `/auth`, `/uploads` para a API.
 
-1. **Admin → Categorias** — crie assuntos (disciplinas da faculdade).
-2. **Admin → Publicações** — editor visual (WYSIWYG), upload de imagens e capa, vários autores.
-3. **Admin → Autores** — cadastro de autores (nome, bio, foto).
-4. Status **Rascunho** ou **Publicado**; só publicados aparecem no site.
-5. URLs: `/categoria/[slug]` e `/publicacao/[slug]`.
+## Deploy
 
-## Deploy (Render)
+### Render (API + Postgres)
 
-Use o **`render.yaml`** no repositório (Blueprint) ou configure manualmente:
+Use `render.yaml` ou configure manualmente:
 
-| Variável | Valor |
-|----------|--------|
-| `DATABASE_URL` | `file:/var/data/app.db` |
-| `SESSION_SECRET` | gerada ou string longa |
-| `ADMIN_EMAIL` | seu e-mail admin |
-| `ADMIN_PASSWORD` | sua senha |
-| `UPLOAD_DIR` | `/var/data/uploads` |
+- **Build:** `npm ci && npm run build:api:render`
+- **Start:** `npm run prisma:deploy --workspace=@edersonalmeida/api && npm run prisma:seed --workspace=@edersonalmeida/api && npm run start --workspace=@edersonalmeida/api`
+- **Health:** `/health`
+- Env: `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `WEB_ORIGIN` (URLs da Vercel + localhost), `UPLOAD_ROOT=/var/data/uploads` + disco em `/var/data`
 
-- **Disco persistente** 1 GB em `/var/data` (obrigatório para SQLite e uploads).
-- **Build:** `npm install && npm run build`
-- **Start:** `npm run start:render` (aplica migrations + seed e sobe o Next)
+### Vercel (front)
 
-Servidor: bind em `0.0.0.0` via `PORT` (padrão do `next start`).
+- **Build:** `npm run vercel-build` (gera `./dist` a partir de `apps/web/dist`)
+- Env: **`VITE_API_URL`** = URL pública da API no Render (sem barra final)
 
-**Opcional:** Postgres local com `docker compose up -d` — exige trocar `provider` em `prisma/schema.prisma` para `postgresql` e migrations compatíveis.
+## Legado
+
+A pasta `src/` com **Next.js** permanece no repositório como referência; o deploy oficial usa `apps/web` + `apps/api`.

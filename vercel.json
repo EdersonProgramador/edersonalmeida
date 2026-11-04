@@ -1,7 +1,20 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "npx prisma migrate deploy && npx prisma db seed && prisma generate && next build",
-  "env": {
-    "DATABASE_URL": "file:./data.db"
-  }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "installCommand": "npm install --workspace=@edersonalmeida/web --include-workspace-root",
+  "buildCommand": "npm run vercel-build",
+  "outputDirectory": "dist",
+  "framework": null,
+  "headers": [
+    {
+      "source": "/index.html",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/((?!assets/|uploads/|.*\\.(jpg|jpeg|png|webp|svg|ico)$).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

@@ -19,6 +19,9 @@
 
 # production
 /build
+/dist
+apps/api/uploads
+apps/api/dist
 
 # misc
 .DS_Store
@@ -49,3 +52,4 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+.env*

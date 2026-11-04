@@ -1,23 +1,47 @@
-# Blueprint Render — https://render.com/docs/blueprint-spec
-services:
-  - type: web
-    name: edpersonalmeida
-    runtime: node
-    plan: free
-    buildCommand: npm install && npm run build
-    disk:
-      name: edpersonalmeida-data
-      mountPath: /var/data
-      sizeGB: 1
-    envVars:
-      - key: DATABASE_URL
-        value: file:/var/data/app.db
-      - key: SESSION_SECRET
-        generateValue: true
-      - key: ADMIN_EMAIL
-        sync: false
-      - key: ADMIN_PASSWORD
-        sync: false
-      - key: UPLOAD_DIR
-        value: /var/data/uploads
-    startCommand: npm run start:render
+# Blueprint Render — API Fastify + Postgres (front estático na Vercel)
+# Depois do deploy: Vercel → VITE_API_URL = URL pública desta API → redeploy
+
+projects:
+  - name: edersonalmeida
+    environments:
+      - name: production
+        databases:
+          - name: edersonalmeida-db
+            databaseName: edersonalmeida
+            user: edersonalmeida
+            plan: free
+            region: virginia
+
+        services:
+          - type: web
+            name: edersonalmeida-api
+            runtime: node
+            plan: free
+            region: virginia
+            branch: main
+            buildCommand: npm ci && npm run build:api:render
+            startCommand: sh -c "npm run prisma:deploy --workspace=@edersonalmeida/api && npm run prisma:seed --workspace=@edersonalmeida/api && npm run start --workspace=@edersonalmeida/api"
+            healthCheckPath: /health
+            disk:
+              name: edersonalmeida-uploads
+              mountPath: /var/data
+              sizeGB: 1
+            envVars:
+              - key: NODE_VERSION
+                value: "20"
+              - key: NODE_ENV
+                value: production
+              - key: DATABASE_URL
+                fromDatabase:
+                  name: edersonalmeida-db
+                  property: connectionString
+              - key: JWT_SECRET
+                generateValue: true
+              - key: WEB_ORIGIN
+                sync: false
+              - key: ADMIN_EMAIL
+                sync: false
+              - key: ADMIN_PASSWORD
+                sync: false
+              - key: UPLOAD_ROOT
+                value: /var/data/uploads

@@ -2,48 +2,28 @@
   "name": "edersonalmeida",
   "version": "0.1.0",
   "private": true,
+  "description": "Portal jurídico — Vite (Vercel) + Fastify + PostgreSQL (Render)",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
-    "start:render": "prisma migrate deploy && prisma db seed && next start",
-    "lint": "eslint",
-    "postinstall": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:seed": "prisma db seed"
-  },
-  "prisma": {
-    "seed": "npx tsx prisma/seed.ts"
-  },
-  "dependencies": {
-    "@prisma/client": "6.19.0",
-    "@tiptap/extension-image": "^3.32.2",
-    "@tiptap/extension-link": "^3.32.2",
-    "@tiptap/extension-placeholder": "^3.32.2",
-    "@tiptap/pm": "^3.32.2",
-    "@tiptap/react": "^3.32.2",
-    "@tiptap/starter-kit": "^3.32.2",
-    "iron-session": "^9.0.1",
-    "next": "16.4.5",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1",
-    "sanitize-html": "^2.18.1",
-    "slugify": "^1.6.9",
-    "prisma": "6.19.0"
+    "dev": "concurrently -n web,api -c cyan,magenta \"npm run dev --workspace @edersonalmeida/web\" \"npm run dev --workspace @edersonalmeida/api\"",
+    "dev:web": "npm run dev --workspace @edersonalmeida/web",
+    "dev:api": "npm run dev --workspace @edersonalmeida/api",
+    "build": "npm run build --workspaces --if-present",
+    "build:web": "npm run build --workspace @edersonalmeida/web",
+    "vercel-build": "npm run build:web",
+    "build:api:render": "npm run prisma:generate --workspace @edersonalmeida/api && npm run build --workspace @edersonalmeida/api",
+    "start:api": "npm run start --workspace @edersonalmeida/api",
+    "prisma:generate": "npm run prisma:generate --workspace @edersonalmeida/api",
+    "prisma:migrate": "npm run prisma:migrate --workspace @edersonalmeida/api",
+    "prisma:seed": "npm run prisma:seed --workspace @edersonalmeida/api"
   },
   "devDependencies": {
-    "@tailwindcss/turbopack": "^4",
-    "@tailwindcss/typography": "^0.5.19",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@types/sanitize-html": "^2.16.2",
-    "eslint": "^9",
-    "eslint-config-next": "16.4.5",
-    "tailwindcss": "^4",
-    "tsx": "^4.20.6",
-    "typescript": "^5"
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
