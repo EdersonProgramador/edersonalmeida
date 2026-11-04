@@ -20,6 +20,8 @@
 # production
 /build
 /dist
+apps/web/dist
+apps/api/node_modules
 apps/api/uploads
 apps/api/dist
 
