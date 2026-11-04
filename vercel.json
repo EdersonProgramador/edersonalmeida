@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "installCommand": "npm ci --workspace=@edersonalmeida/web --include-workspace-root",
+  "installCommand": "npm ci --include=dev --workspace=@edersonalmeida/web --include-workspace-root",
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "dist",
   "framework": null,
@@ -17,6 +17,26 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/auth/:path*",
+      "destination": "https://edpersonalmeida-api.onrender.com/auth/:path*"
+    },
+    {
+      "source": "/public/:path*",
+      "destination": "https://edpersonalmeida-api.onrender.com/public/:path*"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "https://edpersonalmeida-api.onrender.com/admin/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://edpersonalmeida-api.onrender.com/uploads/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://edpersonalmeida-api.onrender.com/health"
+    },
     {
       "source": "/((?!assets/|uploads/|.*\\.(jpg|jpeg|png|webp|svg|ico)$).*)",
       "destination": "/index.html"
