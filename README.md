@@ -13,11 +13,12 @@ Sistema de blog e CMS para **Direito** e temas diversos: site público + painel 
 
    - `ADMIN_EMAIL` / `ADMIN_PASSWORD` — login do painel (`/admin`)
    - `SESSION_SECRET` — string aleatória com pelo menos 32 caracteres
-   - `DATABASE_URL` — local: `file:./dev.db` (relativo à pasta `prisma/`)
+   - `DATABASE_URL` — PostgreSQL (local: `docker compose up -d` e use a URL do `.env.example`)
 
 2. Instale dependências e prepare o banco:
 
 ```bash
+docker compose up -d
 npm install
 npm run db:migrate
 npm run db:seed
@@ -44,6 +45,6 @@ npm run dev
 
 ## Deploy (Render)
 
-Use **PostgreSQL** (SQLite não é adequado em filesystem efêmero). Altere `provider` em `prisma/schema.prisma` para `postgresql` e defina `DATABASE_URL` no serviço. Rode migrations no build (`prisma migrate deploy`).
+Use o **`render.yaml`** (Postgres + web) ou crie um Postgres no Render e defina `DATABASE_URL`, `SESSION_SECRET`, `ADMIN_EMAIL` e `ADMIN_PASSWORD`. O build já roda `prisma migrate deploy`. Depois do primeiro deploy: `npm run db:seed` via shell do Render (ou adicione release command).
 
 Servidor Next.js: bind em `0.0.0.0` via `PORT` (padrão do `next start`).
