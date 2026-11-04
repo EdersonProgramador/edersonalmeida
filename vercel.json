@@ -1,10 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "installCommand": "npm install --workspace=@edersonalmeida/web --include-workspace-root",
+  "installCommand": "npm ci --workspace=@edersonalmeida/web --include-workspace-root",
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "dist",
   "framework": null,
+  "build": {
+    "env": {
+      "NODE_VERSION": "20"
+    }
+  },
   "headers": [
     {
       "source": "/index.html",
