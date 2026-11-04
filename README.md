@@ -7,18 +7,17 @@ Sistema de blog e CMS para **Direito** e temas diversos: site público + painel 
 - Node.js 20+
 - npm
 
-## Configuração
+## Configuração local
 
 1. Copie `.env.example` para `.env` e ajuste:
 
    - `ADMIN_EMAIL` / `ADMIN_PASSWORD` — login do painel (`/admin`)
    - `SESSION_SECRET` — string aleatória com pelo menos 32 caracteres
-   - `DATABASE_URL` — PostgreSQL (local: `docker compose up -d` e use a URL do `.env.example`)
+   - `DATABASE_URL` — `file:./dev.db` (SQLite na pasta `prisma/`)
 
-2. Instale dependências e prepare o banco:
+2. Banco e seed:
 
 ```bash
-docker compose up -d
 npm install
 npm run db:migrate
 npm run db:seed
@@ -35,16 +34,28 @@ npm run dev
 
 ## Fluxo de conteúdo
 
-1. **Admin → Categorias** — crie assuntos (ex.: Direito Penal, Temas diversos).
+1. **Admin → Categorias** — crie assuntos (disciplinas da faculdade).
 2. **Admin → Publicações** — editor visual (WYSIWYG), upload de imagens e capa, vários autores.
 3. **Admin → Autores** — cadastro de autores (nome, bio, foto).
 4. Status **Rascunho** ou **Publicado**; só publicados aparecem no site.
 5. URLs: `/categoria/[slug]` e `/publicacao/[slug]`.
 
-**Uploads:** arquivos vão para `public/uploads/` (ideal em desenvolvimento). No Render, use disco persistente ou armazenamento externo — o filesystem do serviço é efêmero.
-
 ## Deploy (Render)
 
-Use o **`render.yaml`** (Postgres + web) ou crie um Postgres no Render e defina `DATABASE_URL`, `SESSION_SECRET`, `ADMIN_EMAIL` e `ADMIN_PASSWORD`. O build já roda `prisma migrate deploy`. Depois do primeiro deploy: `npm run db:seed` via shell do Render (ou adicione release command).
+Use o **`render.yaml`** no repositório (Blueprint) ou configure manualmente:
 
-Servidor Next.js: bind em `0.0.0.0` via `PORT` (padrão do `next start`).
+| Variável | Valor |
+|----------|--------|
+| `DATABASE_URL` | `file:/var/data/app.db` |
+| `SESSION_SECRET` | gerada ou string longa |
+| `ADMIN_EMAIL` | seu e-mail admin |
+| `ADMIN_PASSWORD` | sua senha |
+| `UPLOAD_DIR` | `/var/data/uploads` |
+
+- **Disco persistente** 1 GB em `/var/data` (obrigatório para SQLite e uploads).
+- **Build:** `npm install && npm run build`
+- **Start:** `npm run start:render` (aplica migrations + seed e sobe o Next)
+
+Servidor: bind em `0.0.0.0` via `PORT` (padrão do `next start`).
+
+**Opcional:** Postgres local com `docker compose up -d` — exige trocar `provider` em `prisma/schema.prisma` para `postgresql` e migrations compatíveis.

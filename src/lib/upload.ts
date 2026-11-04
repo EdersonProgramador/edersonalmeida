@@ -10,6 +10,17 @@ const ALLOWED = new Set([
   "image/gif",
 ]);
 
+function uploadDirectory(): string {
+  return (
+    process.env.UPLOAD_DIR?.trim() ||
+    path.join(process.cwd(), "public", "uploads")
+  );
+}
+
+export function uploadDirectoryPath(): string {
+  return uploadDirectory();
+}
+
 export async function saveUploadedImage(file: File): Promise<string> {
   if (!ALLOWED.has(file.type)) {
     throw new Error("Formato não permitido. Use JPEG, PNG, WebP ou GIF.");
@@ -28,10 +39,13 @@ export async function saveUploadedImage(file: File): Promise<string> {
           : "gif";
 
   const name = `${randomUUID()}.${ext}`;
-  const dir = path.join(process.cwd(), "public", "uploads");
+  const dir = uploadDirectory();
   await mkdir(dir, { recursive: true });
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(dir, name), buffer);
 
+  if (process.env.UPLOAD_DIR) {
+    return `/api/files/${name}`;
+  }
   return `/uploads/${name}`;
 }
