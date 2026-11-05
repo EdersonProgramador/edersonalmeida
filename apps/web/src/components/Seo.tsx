@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import type { Post, SiteSettings } from "@/lib/api";
+import { SITE_BRANDING } from "@/lib/siteBranding";
 
 type Props = {
   settings?: SiteSettings | null;
@@ -33,9 +34,10 @@ function upsertLink(rel: string, href: string) {
 }
 
 export function Seo({ settings, title, description, image, url, type = "website", post, noIndex }: Props) {
-  const siteTitle = settings?.defaultMetaTitle ?? settings?.siteName ?? "Ederson Almeida — Direito";
-  const metaTitle = title ? `${title} | ${settings?.siteName ?? "Direito"}` : siteTitle;
-  const metaDesc = description ?? settings?.defaultMetaDescription ?? settings?.siteDescription ?? "";
+  const siteTitle = settings?.defaultMetaTitle ?? settings?.siteName ?? SITE_BRANDING.defaultMetaTitle;
+  const metaTitle = title ? `${title} | ${settings?.siteName ?? SITE_BRANDING.siteName}` : siteTitle;
+  const metaDesc =
+    description ?? settings?.defaultMetaDescription ?? settings?.siteDescription ?? SITE_BRANDING.defaultMetaDescription;
   const og = image ?? post?.ogImage ?? post?.coverImage ?? settings?.defaultOgImage ?? "";
   const canonical = post?.canonicalUrl ?? url ?? window.location.href;
   const indexable = !(noIndex ?? post?.noIndex);

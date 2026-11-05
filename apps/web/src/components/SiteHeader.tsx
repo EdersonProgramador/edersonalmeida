@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { Scale } from "lucide-react";
 import type { SiteSettings } from "@/lib/api";
+import { SITE_BRANDING } from "@/lib/siteBranding";
 
 export function SiteHeader({ settings }: { settings?: SiteSettings | null }) {
   return (
@@ -12,9 +13,9 @@ export function SiteHeader({ settings }: { settings?: SiteSettings | null }) {
           </span>
           <div>
             <p className="font-serif text-xl font-semibold leading-tight text-navy group-hover:text-accent">
-              {settings?.siteName ?? "Ederson Almeida"}
+              {settings?.siteName ?? SITE_BRANDING.siteName}
             </p>
-            <p className="text-xs tracking-wide text-muted uppercase">{settings?.tagline ?? "Direito"}</p>
+            <p className="text-xs tracking-wide text-muted uppercase">{settings?.tagline ?? SITE_BRANDING.tagline}</p>
           </div>
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-medium md:flex">

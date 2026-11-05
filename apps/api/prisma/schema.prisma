@@ -56,9 +56,9 @@ model User {
 
 model SiteSettings {
   id                       String  @id @default("default")
-  siteName                 String  @default("Ederson Almeida — Direito")
-  tagline                  String  @default("Análises, materiais e atualidades jurídicas")
-  siteDescription          String  @default("Portal de conteúdo jurídico com artigos, materiais e notícias do Direito.")
+  siteName                 String  @default("Ederson Almeida - Acadêmico de Direito")
+  tagline                  String  @default("Acadêmico de Direito")
+  siteDescription          String  @default("Portal de conteúdo jurídico com artigos, materiais, notícias.")
   logoUrl                  String?
   faviconUrl               String?
   contactEmail             String?

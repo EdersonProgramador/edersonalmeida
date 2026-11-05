@@ -17,6 +17,7 @@ import { sanitizeHtmlContent } from "./sanitize.js";
 import { estimateReadingMinutes, resolvePublishedAt } from "./post-utils.js";
 import { registerAuth, authenticate } from "./auth-plugin.js";
 import { syncLawAreaCatalog } from "./catalog.js";
+import { syncSiteBranding } from "./siteBranding.js";
 import { toSlug, uniqueSlug } from "./slug.js";
 
 const app = Fastify({ logger: true, ignoreTrailingSlash: true });
@@ -615,6 +616,7 @@ async function ensureBootstrapUser() {
 
 await ensureBootstrapUser();
 await getSettings();
+await syncSiteBranding(prisma);
 await syncLawAreaCatalog(prisma);
 
 const port = env.API_PORT;

@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import { lawAreaCatalog, syncLawAreaCatalog } from "../src/catalog.js";
+import { SITE_BRANDING } from "../src/siteBranding.js";
 
 const prisma = new PrismaClient();
 
@@ -15,7 +16,7 @@ async function main() {
       passwordHash: await bcrypt.hash(password, 12),
       name: "Ederson Almeida",
       role: "ADMIN",
-      jobTitle: "Advogado",
+      jobTitle: "Acadêmico de Direito",
       bio: "Conteúdo jurídico, análises e materiais para estudo e prática.",
     },
     update: {},
@@ -24,11 +25,7 @@ async function main() {
   await prisma.siteSettings.upsert({
     where: { id: "default" },
     create: {
-      siteName: "Ederson Almeida — Direito",
-      tagline: "Análises, materiais e atualidades jurídicas",
-      defaultMetaTitle: "Ederson Almeida | Blog Jurídico",
-      defaultMetaDescription:
-        "Artigos, materiais e notícias sobre Direito Constitucional, Civil, Penal, Trabalho, Empresarial e mais.",
+      ...SITE_BRANDING,
       cookieNoticeText:
         "Utilizamos cookies para analytics e, quando habilitado, exibição de anúncios. Ao continuar, você concorda com nossa política.",
       legalDisclaimer:

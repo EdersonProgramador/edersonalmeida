@@ -5,6 +5,7 @@ import { PostCard } from "@/components/PostCard";
 import { Seo } from "@/components/Seo";
 import { api } from "@/lib/api";
 import { defaultLawAreas } from "@/lib/defaultLawAreas";
+import { SITE_BRANDING } from "@/lib/siteBranding";
 
 export function HomePage() {
   const settingsQ = useQuery({ queryKey: ["settings"], queryFn: api.publicSettings });
@@ -31,11 +32,15 @@ export function HomePage() {
       <section className="relative overflow-hidden bg-navy text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(201,162,39,0.18),transparent_55%)]" />
         <div className="relative mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
-          <p className="text-sm font-semibold tracking-[0.2em] text-gold uppercase">Portal jurídico</p>
+          <p className="text-sm font-semibold tracking-[0.2em] text-gold uppercase">
+            {settings?.tagline ?? SITE_BRANDING.tagline}
+          </p>
           <h1 className="mt-3 max-w-3xl font-serif text-4xl leading-tight font-semibold md:text-5xl">
-            {settings?.siteName ?? "Ederson Almeida — Direito"}
+            {settings?.siteName ?? SITE_BRANDING.siteName}
           </h1>
-          <p className="mt-4 max-w-2xl text-lg text-white/80">{settings?.siteDescription}</p>
+          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/85">
+            {settings?.siteDescription ?? SITE_BRANDING.siteDescription}
+          </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/categorias" className="rounded-full bg-gold px-6 py-2.5 text-sm font-semibold text-navy">
               Explorar áreas do Direito
