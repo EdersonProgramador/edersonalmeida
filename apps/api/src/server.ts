@@ -15,6 +15,7 @@ import { prisma } from "./prisma.js";
 import { sanitizeHtmlContent } from "./sanitize.js";
 import { estimateReadingMinutes, resolvePublishedAt } from "./post-utils.js";
 import { registerAuth, authenticate } from "./auth-plugin.js";
+import { syncLawAreaCatalog } from "./catalog.js";
 import { toSlug, uniqueSlug } from "./slug.js";
 
 const app = Fastify({ logger: true });
@@ -597,6 +598,7 @@ async function ensureBootstrapUser() {
 
 await ensureBootstrapUser();
 await getSettings();
+await syncLawAreaCatalog(prisma);
 
 const port = env.API_PORT;
 await app.listen({ port, host: "0.0.0.0" });
