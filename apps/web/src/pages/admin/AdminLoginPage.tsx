@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
 export function AdminLoginPage() {
@@ -46,6 +47,15 @@ export function AdminLoginPage() {
         >
           {loading ? "Entrando…" : "Entrar"}
         </button>
+        <p className="mt-6 text-center">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-muted hover:text-accent"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            Voltar à página inicial
+          </Link>
+        </p>
       </form>
     </div>
   );
