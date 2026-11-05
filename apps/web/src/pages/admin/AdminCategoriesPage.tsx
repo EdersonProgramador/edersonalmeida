@@ -81,6 +81,17 @@ export function AdminCategoriesPage() {
         </button>
       </form>
 
+      {catsQ.isLoading ? <p className="text-sm text-muted">Carregando categorias…</p> : null}
+      {catsQ.isError ? (
+        <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+          Não foi possível carregar as categorias. Faça login novamente ou atualize a página.
+          {(catsQ.error as Error)?.message ? ` (${(catsQ.error as Error).message})` : ""}
+        </p>
+      ) : null}
+      {!catsQ.isLoading && !catsQ.isError && (catsQ.data?.length ?? 0) === 0 ? (
+        <p className="text-sm text-muted">Nenhuma categoria cadastrada ainda.</p>
+      ) : null}
+
       <div className="space-y-4">
         {(catsQ.data ?? []).map((root) => (
           <div key={root.id} className="rounded-xl border border-border p-4">

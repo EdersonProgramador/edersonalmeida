@@ -19,7 +19,7 @@ import { registerAuth, authenticate } from "./auth-plugin.js";
 import { syncLawAreaCatalog } from "./catalog.js";
 import { toSlug, uniqueSlug } from "./slug.js";
 
-const app = Fastify({ logger: true });
+const app = Fastify({ logger: true, ignoreTrailingSlash: true });
 
 function resolveUploadRoot() {
   const candidates = [
