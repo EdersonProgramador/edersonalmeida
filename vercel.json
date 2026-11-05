@@ -1,82 +1,82 @@
 {
-    "$schema":  "https://openapi.vercel.sh/vercel.json",
-    "version":  2,
-    "installCommand":  "npm ci",
-    "buildCommand":  "npm run vercel-build",
-    "outputDirectory":  "dist",
-    "framework":  null,
-    "build":  {
-                  "env":  {
-                              "NODE_VERSION":  "20"
-                          }
-              },
-    "headers":  [
-                    {
-                        "source":  "/index.html",
-                        "headers":  [
-                                        {
-                                            "key":  "Cache-Control",
-                                            "value":  "public, max-age=0, must-revalidate"
-                                        }
-                                    ]
-                    }
-                ],
-    "rewrites":  [
-                     {
-                         "source":  "/auth/:path*",
-                         "destination":  "https://edersonalmeida.onrender.com/auth/:path*"
-                     },
-                     {
-                         "source":  "/public/:path*",
-                         "destination":  "https://edersonalmeida.onrender.com/public/:path*"
-                     },
-                     {
-                         "source":  "/admin/stats",
-                         "destination":  "https://edersonalmeida.onrender.com/admin/stats"
-                     },
-                     {
-                         "source":  "/admin/settings",
-                         "destination":  "https://edersonalmeida.onrender.com/admin/settings"
-                     },
-                     {
-                         "source":  "/admin/posts",
-                         "destination":  "https://edersonalmeida.onrender.com/admin/posts"
-                     },
-                     {
-                         "source":  "/admin/posts/:path*",
-                         "destination":  "https://edersonalmeida.onrender.com/admin/posts/:path*"
-                     },
-                     {
-                         "source":  "/admin/categories/:path*",
-                         "destination":  "https://edersonalmeida.onrender.com/admin/categories/:path*"
-                     },
-                     {
-                         "source":  "/admin/categories",
-                         "destination":  "https://edersonalmeida.onrender.com/admin/categories"
-                     },
-                     {
-                         "source":  "/admin/uploads",
-                         "destination":  "https://edersonalmeida.onrender.com/admin/uploads"
-                     },
-                     {
-                         "source":  "/uploads/:path*",
-                         "destination":  "https://edersonalmeida.onrender.com/uploads/:path*"
-                     },
-                     {
-                         "source":  "/health",
-                         "destination":  "https://edersonalmeida.onrender.com/health"
-                     },
-                     {
-                         "source":  "/public/sitemap.xml",
-                         "destination":  "https://edersonalmeida.onrender.com/public/sitemap.xml"
-                     },
-                     {
-                         "source":  "/public/robots.txt",
-                         "destination":  "https://edersonalmeida.onrender.com/public/robots.txt"
-                     },
-                     {
-                         "source":  "/:path*",
-                         "destination":  "/index.html"
-                     }
-                 ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "installCommand": "npm ci",
+  "buildCommand": "npm run vercel-build",
+  "outputDirectory": "dist",
+  "framework": null,
+  "build": {
+    "env": {
+      "NODE_VERSION": "20"
+    }
+  },
+  "headers": [
+    {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/auth/:path*",
+      "destination": "https://edersonalmeida.onrender.com/auth/:path*"
+    },
+    {
+      "source": "/public/:path*",
+      "destination": "https://edersonalmeida.onrender.com/public/:path*"
+    },
+    {
+      "source": "/admin/stats",
+      "destination": "https://edersonalmeida.onrender.com/admin/stats"
+    },
+    {
+      "source": "/admin/settings",
+      "destination": "https://edersonalmeida.onrender.com/admin/settings"
+    },
+    {
+      "source": "/admin/posts",
+      "destination": "https://edersonalmeida.onrender.com/admin/posts"
+    },
+    {
+      "source": "/admin/posts/:path*",
+      "destination": "https://edersonalmeida.onrender.com/admin/posts/:path*"
+    },
+    {
+      "source": "/admin/categories",
+      "destination": "https://edersonalmeida.onrender.com/admin/categories"
+    },
+    {
+      "source": "/admin/categories/:path*",
+      "destination": "https://edersonalmeida.onrender.com/admin/categories/:path*"
+    },
+    {
+      "source": "/admin/uploads",
+      "destination": "https://edersonalmeida.onrender.com/admin/uploads"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://edersonalmeida.onrender.com/uploads/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://edersonalmeida.onrender.com/health"
+    },
+    {
+      "source": "/public/sitemap.xml",
+      "destination": "https://edersonalmeida.onrender.com/public/sitemap.xml"
+    },
+    {
+      "source": "/public/robots.txt",
+      "destination": "https://edersonalmeida.onrender.com/public/robots.txt"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
 }
