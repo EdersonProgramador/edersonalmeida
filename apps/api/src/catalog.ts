@@ -4,11 +4,69 @@ import { toSlug } from "./slug.js";
 export type CatalogCategory = {
   name: string;
   description: string;
-  icon: string;
-  accentColor: string;
+  icon?: string;
+  accentColor?: string;
   sortOrder: number;
   children?: string[];
 };
+
+/** Disciplinas da grade que você definiu no portal (além dos ramos clássicos). */
+export const academicLawCatalog: CatalogCategory[] = [
+  {
+    name: "Introdução ao Estudo do Direito",
+    description: "Método, fontes, interpretação e vocabulário jurídico.",
+    sortOrder: 1,
+  },
+  { name: "Filosofia", description: "Fundamentos filosóficos do direito e da justiça.", sortOrder: 2 },
+  {
+    name: "Ciência Política e Teoria do Estado",
+    description: "Estado, poder, soberania e instituições políticas.",
+    sortOrder: 3,
+  },
+  {
+    name: "Fundamentos Antropológicos e Sociológicos",
+    description: "Direito na sociedade, cultura e comportamento humano.",
+    sortOrder: 4,
+  },
+  {
+    name: "Teoria Geral do Processo e Fase de conhecimento no Processo Civil",
+    description: "Estrutura processual e fase cognitiva no CPC.",
+    sortOrder: 6,
+  },
+  {
+    name: "Teoria Constitucional e Direitos Fundamentais",
+    description: "Constituição, direitos e garantias fundamentais.",
+    sortOrder: 7,
+  },
+  { name: "Organização Estatal", description: "Organização dos poderes e entes federativos.", sortOrder: 8 },
+  {
+    name: "Língua Portuguesa",
+    description: "Comunicação escrita e oral aplicada aos estudos jurídicos.",
+    sortOrder: 9,
+  },
+  {
+    name: "A História da Justiça no Brasil",
+    description: "Trajetória das instituições de justiça no país.",
+    sortOrder: 10,
+  },
+  {
+    name: "Direito Civil - Parte Geral",
+    description: "Pessoas, bens, fatos jurídicos e relações obrigacionais.",
+    sortOrder: 11,
+  },
+  {
+    name: "Teoria da Decisão Jurisdicional e Recursos no Processo Civil",
+    description: "Sentença, coisa julgada e sistema recursal cível.",
+    sortOrder: 13,
+  },
+  { name: "Processo do Trabalho", description: "Procedimentos na Justiça do Trabalho.", sortOrder: 14 },
+  { name: "Direito Previdenciário", description: "Seguridade social, benefícios e previdência.", sortOrder: 15 },
+  { name: "Hermenêutica Jurídica", description: "Interpretação e aplicação das normas jurídicas.", sortOrder: 16 },
+  { name: "Administração", description: "Gestão, organizações e administração.", sortOrder: 90 },
+  { name: "Psicologia", description: "Psicologia e comportamento.", sortOrder: 91 },
+  { name: "Sociologia", description: "Sociedade, grupos e instituições.", sortOrder: 92 },
+  { name: "Antropologia", description: "Cultura, diversidade e antropologia.", sortOrder: 93 },
+];
 
 /** Áreas do Direito (grade original do portal). */
 export const lawAreaCatalog: CatalogCategory[] = [
@@ -77,8 +135,10 @@ export const lawAreaCatalog: CatalogCategory[] = [
   },
 ];
 
+const fullCatalog = [...academicLawCatalog, ...lawAreaCatalog];
+
 export async function syncLawAreaCatalog(prisma: PrismaClient) {
-  for (const cat of lawAreaCatalog) {
+  for (const cat of fullCatalog) {
     const parent = await prisma.category.upsert({
       where: { slug: toSlug(cat.name) },
       create: {

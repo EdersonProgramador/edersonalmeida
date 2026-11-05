@@ -19,47 +19,47 @@
   "rewrites": [
     {
       "source": "/auth/:path*",
-      "destination": "https://edpersonalmeida.onrender.com/auth/:path*"
+      "destination": "https://edersonalmeida.onrender.com/auth/:path*"
     },
     {
       "source": "/public/:path*",
-      "destination": "https://edpersonalmeida.onrender.com/public/:path*"
+      "destination": "https://edersonalmeida.onrender.com/public/:path*"
     },
     {
       "source": "/admin/stats",
-      "destination": "https://edpersonalmeida.onrender.com/admin/stats"
+      "destination": "https://edersonalmeida.onrender.com/admin/stats"
     },
     {
       "source": "/admin/settings",
-      "destination": "https://edpersonalmeida.onrender.com/admin/settings"
+      "destination": "https://edersonalmeida.onrender.com/admin/settings"
     },
     {
       "source": "/admin/posts/:path*",
-      "destination": "https://edpersonalmeida.onrender.com/admin/posts/:path*"
+      "destination": "https://edersonalmeida.onrender.com/admin/posts/:path*"
     },
     {
       "source": "/admin/categories/:path*",
-      "destination": "https://edpersonalmeida.onrender.com/admin/categories/:path*"
+      "destination": "https://edersonalmeida.onrender.com/admin/categories/:path*"
     },
     {
       "source": "/admin/uploads",
-      "destination": "https://edpersonalmeida.onrender.com/admin/uploads"
+      "destination": "https://edersonalmeida.onrender.com/admin/uploads"
     },
     {
       "source": "/uploads/:path*",
-      "destination": "https://edpersonalmeida.onrender.com/uploads/:path*"
+      "destination": "https://edersonalmeida.onrender.com/uploads/:path*"
     },
     {
       "source": "/health",
-      "destination": "https://edpersonalmeida.onrender.com/health"
+      "destination": "https://edersonalmeida.onrender.com/health"
     },
     {
       "source": "/public/sitemap.xml",
-      "destination": "https://edpersonalmeida.onrender.com/public/sitemap.xml"
+      "destination": "https://edersonalmeida.onrender.com/public/sitemap.xml"
     },
     {
       "source": "/public/robots.txt",
-      "destination": "https://edpersonalmeida.onrender.com/public/robots.txt"
+      "destination": "https://edersonalmeida.onrender.com/public/robots.txt"
     },
     {
       "source": "/:path*",
