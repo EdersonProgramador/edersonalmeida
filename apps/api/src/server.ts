@@ -5,6 +5,7 @@ import fastifyStatic from "@fastify/static";
 import bcrypt from "bcryptjs";
 import Fastify from "fastify";
 import { mkdirSync, createWriteStream } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, extname } from "node:path";
 import { pipeline } from "node:stream/promises";
 import { randomUUID } from "node:crypto";
@@ -20,8 +21,24 @@ import { toSlug, uniqueSlug } from "./slug.js";
 
 const app = Fastify({ logger: true });
 
-const uploadRoot = env.UPLOAD_ROOT ?? join(process.cwd(), "uploads");
-mkdirSync(uploadRoot, { recursive: true });
+function resolveUploadRoot() {
+  const candidates = [
+    env.UPLOAD_ROOT,
+    join(process.cwd(), "uploads"),
+    join(tmpdir(), "edpersonalmeida-uploads"),
+  ].filter(Boolean) as string[];
+  for (const dir of candidates) {
+    try {
+      mkdirSync(dir, { recursive: true });
+      return dir;
+    } catch {
+      /* try next */
+    }
+  }
+  return join(tmpdir(), "edpersonalmeida-uploads");
+}
+
+const uploadRoot = resolveUploadRoot();
 
 await app.register(cors, {
   origin: [env.WEB_ORIGIN, "http://localhost:5173", "http://localhost:5175", /\.vercel\.app$/],
