@@ -34,7 +34,8 @@ const schema = z.object({
     .preprocess((v) => v ?? process.env.SESSION_SECRET, z.string().min(16)),
   ADMIN_EMAIL: z.string().email(),
   ADMIN_PASSWORD: z.string().min(6),
-  UPLOAD_ROOT: z.string().optional(),
+  UPLOAD_ROOT: z
+    .preprocess((v) => (typeof v === "string" && v.trim() === "" ? undefined : v), z.string().optional()),
   NEON_REALTIME_URL: z.string().url().optional(),
   NEON_REALTIME_SECRET: z.string().min(1).optional(),
   NEON_BRANCH: z.string().optional(),

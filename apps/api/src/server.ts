@@ -23,10 +23,10 @@ const app = Fastify({ logger: true });
 
 function resolveUploadRoot() {
   const candidates = [
-    env.UPLOAD_ROOT,
+    env.UPLOAD_ROOT?.trim(),
     join(process.cwd(), "uploads"),
     join(tmpdir(), "edpersonalmeida-uploads"),
-  ].filter(Boolean) as string[];
+  ].filter((d): d is string => Boolean(d?.trim()));
   for (const dir of candidates) {
     try {
       mkdirSync(dir, { recursive: true });
