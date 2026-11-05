@@ -26,8 +26,24 @@
       "destination": "https://edpersonalmeida.onrender.com/public/:path*"
     },
     {
-      "source": "/admin/:path*",
-      "destination": "https://edpersonalmeida.onrender.com/admin/:path*"
+      "source": "/admin/stats",
+      "destination": "https://edpersonalmeida.onrender.com/admin/stats"
+    },
+    {
+      "source": "/admin/settings",
+      "destination": "https://edpersonalmeida.onrender.com/admin/settings"
+    },
+    {
+      "source": "/admin/posts/:path*",
+      "destination": "https://edpersonalmeida.onrender.com/admin/posts/:path*"
+    },
+    {
+      "source": "/admin/categories/:path*",
+      "destination": "https://edpersonalmeida.onrender.com/admin/categories/:path*"
+    },
+    {
+      "source": "/admin/uploads",
+      "destination": "https://edpersonalmeida.onrender.com/admin/uploads"
     },
     {
       "source": "/uploads/:path*",
