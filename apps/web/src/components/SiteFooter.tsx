@@ -4,8 +4,10 @@ export function SiteFooter({ settings }: { settings?: SiteSettings | null }) {
   return (
     <footer className="mt-16 border-t border-border bg-navy text-white">
       <div className="mx-auto max-w-6xl px-4 py-10 md:px-6">
-        <p className="font-serif text-2xl text-gold-soft">{settings?.siteName}</p>
-        <p className="mt-2 max-w-2xl text-sm text-white/75">{settings?.legalDisclaimer}</p>
+        <p className="font-serif text-2xl text-gold-soft">{settings?.siteName ?? "Ederson Almeida"}</p>
+        {settings?.tagline ? <p className="mt-1 text-sm text-white/60">{settings.tagline}</p> : null}
+        <p className="mt-3 max-w-2xl text-sm text-white/75">{settings?.siteDescription}</p>
+        <p className="mt-4 max-w-2xl text-sm text-white/75">{settings?.legalDisclaimer}</p>
         {settings?.contactEmail ? (
           <p className="mt-4 text-sm">
             Contato:{" "}
