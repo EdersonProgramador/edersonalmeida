@@ -1,0 +1,22 @@
+{
+  "name": "edpersonalmeida",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c cyan,magenta \"npm run dev -w @edpersonalmeida/web\" \"npm run dev -w @edpersonalmeida/api\"",
+    "build": "npm run build -w @edpersonalmeida/api && npm run build -w @edpersonalmeida/web",
+    "build:web": "npm run build -w @edpersonalmeida/web",
+    "build:api": "npm run build -w @edpersonalmeida/api",
+    "vercel-build": "npm run build:web",
+    "start:render": "npm run start -w @edpersonalmeida/api",
+    "db:generate": "npm run db:generate -w @edpersonalmeida/api",
+    "db:migrate": "npm run db:migrate -w @edpersonalmeida/api",
+    "db:seed": "npm run db:seed -w @edpersonalmeida/api",
+    "postinstall": "npm run db:generate -w @edpersonalmeida/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

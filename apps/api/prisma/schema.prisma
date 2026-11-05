@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+}
+
+enum PostType {
+  ARTIGO
+  MATERIAL
+  AULA
+  PALESTRA
+  PODCAST
+  OUTRO
+}
+
+enum PostStatus {
+  DRAFT
+  REVIEW
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ContentFormat {
+  HTML
+  MARKDOWN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         UserRole @default(ADMIN)
+  avatarUrl    String?
+  bio          String?
+  jobTitle     String?
+  oabNumber    String?
+  phone        String?
+  websiteUrl   String?
+  linkedInUrl  String?
+  instagramUrl String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  posts        Post[]
+}
+
+model SiteSettings {
+  id                       String  @id @default("default")
+  siteName                 String  @default("Ederson Almeida — Direito")
+  tagline                  String  @default("Análises, materiais e atualidades jurídicas")
+  siteDescription          String  @default("Portal de conteúdo jurídico com artigos, materiais e notícias do Direito.")
+  logoUrl                  String?
+  faviconUrl               String?
+  contactEmail             String?
+  defaultMetaTitle         String?
+  defaultMetaDescription   String?
+  defaultOgImage           String?
+  twitterHandle            String?
+  googleSiteVerification   String?
+  gaMeasurementId          String?
+  gtmContainerId           String?
+  adsEnabled               Boolean @default(false)
+  googleAdsClientId        String?
+  adsHeadHtml              String?
+  cookieConsentEnabled     Boolean @default(true)
+  cookieNoticeText         String?
+  privacyPolicyHtml        String?
+  termsHtml                String?
+  legalDisclaimer          String?
+  postsPerPage             Int     @default(12)
+  allowPublicSearch        Boolean @default(true)
+  maintenanceMode          Boolean @default(false)
+  updatedAt                DateTime @updatedAt
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  icon        String?
+  accentColor String?
+  sortOrder   Int        @default(0)
+  parentId    String?
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryTree")
+  posts       Post[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([parentId])
+  @@index([sortOrder])
+}
+
+model Post {
+  id              String        @id @default(cuid())
+  title           String
+  slug            String        @unique
+  excerpt         String?
+  content         String
+  contentFormat   ContentFormat @default(HTML)
+  coverImage      String?
+  type            PostType      @default(ARTIGO)
+  status          PostStatus    @default(DRAFT)
+  featured        Boolean       @default(false)
+  publishedAt     DateTime?
+  scheduledFor    DateTime?
+  readingMinutes  Int?
+  metaTitle       String?
+  metaDescription String?
+  focusKeyword    String?
+  ogImage         String?
+  canonicalUrl    String?
+  noIndex         Boolean       @default(false)
+  categoryId      String
+  category        Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  authorId        String
+  author          User          @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([status, publishedAt])
+  @@index([featured])
+}

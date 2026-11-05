@@ -1,0 +1,53 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "installCommand": "npm ci --include=dev --workspace=@edpersonalmeida/web --include-workspace-root",
+  "buildCommand": "npm run vercel-build",
+  "outputDirectory": "dist",
+  "framework": null,
+  "build": {
+    "env": {
+      "NODE_VERSION": "20"
+    }
+  },
+  "headers": [
+    {
+      "source": "/index.html",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/auth/:path*",
+      "destination": "https://edpersonalmeida.onrender.com/auth/:path*"
+    },
+    {
+      "source": "/public/:path*",
+      "destination": "https://edpersonalmeida.onrender.com/public/:path*"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "https://edpersonalmeida.onrender.com/admin/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://edpersonalmeida.onrender.com/uploads/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://edpersonalmeida.onrender.com/health"
+    },
+    {
+      "source": "/public/sitemap.xml",
+      "destination": "https://edpersonalmeida.onrender.com/public/sitemap.xml"
+    },
+    {
+      "source": "/public/robots.txt",
+      "destination": "https://edpersonalmeida.onrender.com/public/robots.txt"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f7f4ee;
+  --color-surface: #ffffff;
+  --color-ink: #0f1729;
+  --color-muted: #5c6578;
+  --color-border: #e2ddd2;
+  --color-navy: #0f1729;
+  --color-navy-soft: #1a2744;
+  --color-gold: #c9a227;
+  --color-gold-soft: #e8d48a;
+  --color-accent: #1e4d7b;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Source Sans 3", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+  h1,
+  h2,
+  h3,
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+}
+
+.prose-legal h2 {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  margin-top: 2rem;
+  color: var(--color-navy);
+}
+.prose-legal p {
+  margin: 1rem 0;
+  line-height: 1.75;
+  color: #243047;
+}
+.prose-legal ul {
+  margin: 1rem 0 1rem 1.25rem;
+  list-style: disc;
+}
+.prose-legal a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
