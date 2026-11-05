@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FormEvent, useMemo, useState } from "react";
+import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
+import { CategoryInlineEditor } from "@/components/admin/CategoryInlineEditor";
 import { api, type AdminCategory, type CategoryInput } from "@/lib/api";
+import { matchesSearch } from "@/lib/searchText";
 
 const emptyForm = (): CategoryInput => ({
   name: "",
@@ -11,6 +14,42 @@ const emptyForm = (): CategoryInput => ({
   accentColor: "",
   slug: "",
 });
+
+type KindFilter = "all" | "roots" | "subs";
+
+function filterCategories(roots: AdminCategory[], query: string, kind: KindFilter): AdminCategory[] {
+  const q = query.trim();
+
+  if (kind === "roots") {
+    return roots
+      .filter((r) => matchesSearch(r.name, q) || matchesSearch(r.slug, q))
+      .map((r) => ({ ...r, children: [] }));
+  }
+
+  if (kind === "subs") {
+    return roots
+      .map((r) => ({
+        ...r,
+        children: r.children.filter((ch) => matchesSearch(ch.name, q) || matchesSearch(ch.slug, q)),
+      }))
+      .filter((r) => r.children.length > 0);
+  }
+
+  return roots
+    .map((r) => {
+      const rootMatch = !q || matchesSearch(r.name, q) || matchesSearch(r.slug, q);
+      const children = r.children.filter((ch) => !q || matchesSearch(ch.name, q) || matchesSearch(ch.slug, q));
+      if (!rootMatch && children.length === 0) return null;
+      return { ...r, children: rootMatch && !q ? r.children : children };
+    })
+    .filter((r): r is AdminCategory => r !== null);
+}
+
+function countVisibleRows(roots: AdminCategory[], kind: KindFilter): number {
+  if (kind === "roots") return roots.length;
+  if (kind === "subs") return roots.reduce((n, r) => n + r.children.length, 0);
+  return roots.reduce((n, r) => n + 1 + r.children.length, 0);
+}
 
 function findCategory(roots: AdminCategory[], id: string): AdminCategory | null {
   for (const root of roots) {
@@ -24,25 +63,36 @@ function findCategory(roots: AdminCategory[], id: string): AdminCategory | null 
 export function AdminCategoriesPage() {
   const qc = useQueryClient();
   const catsQ = useQuery({ queryKey: ["admin-categories"], queryFn: api.adminCategories });
+  const [search, setSearch] = useState("");
+  const [kind, setKind] = useState<KindFilter>("all");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [inlineId, setInlineId] = useState<string | null>(null);
+  const [inlineError, setInlineError] = useState<string | null>(null);
   const [form, setForm] = useState<CategoryInput>(emptyForm());
   const [formError, setFormError] = useState<string | null>(null);
 
+  const allRoots = catsQ.data ?? [];
+  const filteredRoots = useMemo(() => filterCategories(allRoots, search, kind), [allRoots, search, kind]);
+  const totalRows = countVisibleRows(allRoots, "all");
+  const shownRows = countVisibleRows(filteredRoots, kind);
+
   const parentOptions = useMemo(() => {
     const rows: { id: string; label: string }[] = [];
-    for (const root of catsQ.data ?? []) {
+    for (const root of allRoots) {
       if (root.id !== editingId) rows.push({ id: root.id, label: root.name });
     }
     return rows;
-  }, [catsQ.data, editingId]);
+  }, [allRoots, editingId]);
 
   function startCreate() {
     setEditingId(null);
+    setInlineId(null);
     setFormError(null);
     setForm(emptyForm());
   }
 
   function startEdit(cat: AdminCategory) {
+    setInlineId(null);
     setEditingId(cat.id);
     setFormError(null);
     setForm({
@@ -76,10 +126,20 @@ export function AdminCategoriesPage() {
     onError: (err: Error) => setFormError(err.message),
   });
 
+  const inlineSave = useMutation({
+    mutationFn: ({ id, body }: { id: string; body: CategoryInput }) => api.updateCategory(id, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-categories"] });
+      setInlineId(null);
+      setInlineError(null);
+    },
+    onError: (err: Error) => setInlineError(err.message),
+  });
+
   const remove = useMutation({
     mutationFn: api.deleteCategory,
     onSuccess: () => {
-      if (editingId) startCreate();
+      if (editingId || inlineId) startCreate();
       qc.invalidateQueries({ queryKey: ["admin-categories"] });
     },
     onError: (err: Error) => alert(err.message),
@@ -93,6 +153,32 @@ export function AdminCategoriesPage() {
 
   const field = "mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm";
   const isEditing = Boolean(editingId);
+  const rowHighlight = "ring-2 ring-gold/40 bg-gold/5";
+
+  function renderInlineRow(cat: AdminCategory, parentLabel?: string) {
+    if (inlineId !== cat.id) return null;
+    return (
+      <tr key={`${cat.id}-inline`}>
+        <td colSpan={5} className="border-b border-border/70 px-0 py-0">
+          <CategoryInlineEditor
+            initial={{ ...cat, id: cat.id }}
+            parentLabel={parentLabel}
+            saving={inlineSave.isPending}
+            error={inlineError}
+            onCancel={() => {
+              setInlineId(null);
+              setInlineError(null);
+            }}
+            onFullEdit={() => startEdit(cat)}
+            onSave={(body) => {
+              setInlineError(null);
+              inlineSave.mutate({ id: cat.id, body });
+            }}
+          />
+        </td>
+      </tr>
+    );
+  }
 
   return (
     <div className="space-y-10">
@@ -100,7 +186,7 @@ export function AdminCategoriesPage() {
         <div>
           <h1 className="font-serif text-3xl text-navy">Categorias e subcategorias</h1>
           <p className="mt-2 text-sm text-muted">
-            CRUD completo: criar, editar, ordenar e excluir. Subcategorias ficam vinculadas a uma categoria pai.
+            Busca, filtros, edição inline na tabela ou formulário completo acima.
           </p>
         </div>
         {isEditing ? (
@@ -190,74 +276,130 @@ export function AdminCategoriesPage() {
           {(catsQ.error as Error)?.message ? ` (${(catsQ.error as Error).message})` : ""}
         </p>
       ) : null}
-      {!catsQ.isLoading && !catsQ.isError && (catsQ.data?.length ?? 0) === 0 ? (
+      {!catsQ.isLoading && !catsQ.isError && allRoots.length === 0 ? (
         <p className="text-sm text-muted">Nenhuma categoria cadastrada. Use o formulário acima para criar a primeira.</p>
       ) : null}
 
-      {(catsQ.data?.length ?? 0) > 0 ? (
-        <div className="overflow-x-auto rounded-xl border border-border">
-          <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="border-b border-border bg-paper text-muted">
-              <tr>
-                <th className="px-4 py-3">Nome</th>
-                <th className="px-4 py-3">Slug</th>
-                <th className="px-4 py-3">Ordem</th>
-                <th className="px-4 py-3">Posts</th>
-                <th className="px-4 py-3">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(catsQ.data ?? []).flatMap((root) => {
-                const rootRow = (
-                  <tr key={root.id} className="border-b border-border/70 bg-surface">
-                    <td className="px-4 py-3 font-medium text-navy">
-                      {root.icon ? `${root.icon} ` : null}
-                      {root.name}
-                    </td>
-                    <td className="px-4 py-3 text-muted">{root.slug}</td>
-                    <td className="px-4 py-3">{root.sortOrder ?? 0}</td>
-                    <td className="px-4 py-3">{root._count?.posts ?? 0}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <button type="button" className="text-accent hover:underline" onClick={() => startEdit(root)}>
-                        Editar
-                      </button>
-                      <button
-                        type="button"
-                        className="ml-3 text-red-700 hover:underline"
-                        onClick={() => confirm(`Excluir “${root.name}”?`) && remove.mutate(root.id)}
-                      >
-                        Excluir
-                      </button>
-                    </td>
+      {allRoots.length > 0 ? (
+        <div className="space-y-4">
+          <AdminListToolbar
+            search={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Nome ou slug…"
+            shown={shownRows}
+            total={totalRows}
+            filters={[
+              {
+                id: "kind",
+                label: "Exibir",
+                value: kind,
+                onChange: (v) => setKind(v as KindFilter),
+                options: [
+                  { value: "all", label: "Todas" },
+                  { value: "roots", label: "Só raízes" },
+                  { value: "subs", label: "Só subcategorias" },
+                ],
+              },
+            ]}
+          />
+
+          {filteredRoots.length === 0 ? (
+            <p className="text-sm text-muted">Nenhum resultado para a busca ou filtro atual.</p>
+          ) : (
+            <div className="overflow-x-auto rounded-xl border border-border">
+              <table className="w-full min-w-[720px] text-left text-sm">
+                <thead className="border-b border-border bg-paper text-muted">
+                  <tr>
+                    <th className="px-4 py-3">Nome</th>
+                    <th className="px-4 py-3">Slug</th>
+                    <th className="px-4 py-3">Ordem</th>
+                    <th className="px-4 py-3">Posts</th>
+                    <th className="px-4 py-3">Ações</th>
                   </tr>
-                );
-                const childRows = root.children.map((ch) => {
-                  const full = findCategory(catsQ.data!, ch.id) ?? { ...ch, children: [], parent: root };
-                  return (
-                    <tr key={ch.id} className="border-b border-border/50">
-                      <td className="px-4 py-3 pl-10 text-ink">↳ {ch.name}</td>
-                      <td className="px-4 py-3 text-muted">{ch.slug}</td>
-                      <td className="px-4 py-3">{ch.sortOrder ?? 0}</td>
-                      <td className="px-4 py-3">—</td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <button type="button" className="text-accent hover:underline" onClick={() => startEdit(full)}>
-                          Editar
-                        </button>
-                        <button
-                          type="button"
-                          className="ml-3 text-red-700 hover:underline"
-                          onClick={() => confirm(`Excluir subcategoria “${ch.name}”?`) && remove.mutate(ch.id)}
-                        >
-                          Excluir
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                });
-                return [rootRow, ...childRows];
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {filteredRoots.flatMap((root) => {
+                    const rootActive = editingId === root.id || inlineId === root.id;
+                    const rootRow = (
+                      <tr key={root.id} className={`border-b border-border/70 bg-surface ${rootActive ? rowHighlight : ""}`}>
+                        <td className="px-4 py-3 font-medium text-navy">
+                          {root.icon ? `${root.icon} ` : null}
+                          {root.name}
+                        </td>
+                        <td className="px-4 py-3 text-muted">{root.slug}</td>
+                        <td className="px-4 py-3">{root.sortOrder ?? 0}</td>
+                        <td className="px-4 py-3">{root._count?.posts ?? 0}</td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <button
+                            type="button"
+                            className="text-accent hover:underline"
+                            onClick={() => {
+                              setInlineError(null);
+                              setInlineId(inlineId === root.id ? null : root.id);
+                              setEditingId(null);
+                            }}
+                          >
+                            {inlineId === root.id ? "Fechar" : "Inline"}
+                          </button>
+                          <button type="button" className="ml-3 text-accent hover:underline" onClick={() => startEdit(root)}>
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            className="ml-3 text-red-700 hover:underline"
+                            onClick={() => confirm(`Excluir “${root.name}”?`) && remove.mutate(root.id)}
+                          >
+                            Excluir
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                    const rootInline = kind !== "subs" ? renderInlineRow(root) : null;
+                    const childRows =
+                      kind === "roots"
+                        ? []
+                        : root.children.flatMap((ch) => {
+                            const full = findCategory(allRoots, ch.id) ?? { ...ch, children: [], parent: root };
+                            const childActive = editingId === ch.id || inlineId === ch.id;
+                            return [
+                              <tr key={ch.id} className={`border-b border-border/50 ${childActive ? rowHighlight : ""}`}>
+                                <td className="px-4 py-3 pl-10 text-ink">↳ {ch.name}</td>
+                                <td className="px-4 py-3 text-muted">{ch.slug}</td>
+                                <td className="px-4 py-3">{ch.sortOrder ?? 0}</td>
+                                <td className="px-4 py-3">—</td>
+                                <td className="px-4 py-3 whitespace-nowrap">
+                                  <button
+                                    type="button"
+                                    className="text-accent hover:underline"
+                                    onClick={() => {
+                                      setInlineError(null);
+                                      setInlineId(inlineId === ch.id ? null : ch.id);
+                                      setEditingId(null);
+                                    }}
+                                  >
+                                    {inlineId === ch.id ? "Fechar" : "Inline"}
+                                  </button>
+                                  <button type="button" className="ml-3 text-accent hover:underline" onClick={() => startEdit(full)}>
+                                    Editar
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="ml-3 text-red-700 hover:underline"
+                                    onClick={() => confirm(`Excluir subcategoria “${ch.name}”?`) && remove.mutate(ch.id)}
+                                  >
+                                    Excluir
+                                  </button>
+                                </td>
+                              </tr>,
+                              renderInlineRow(full, root.name),
+                            ].filter(Boolean);
+                          });
+                    return [rootRow, rootInline, ...childRows].filter(Boolean);
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       ) : null}
     </div>

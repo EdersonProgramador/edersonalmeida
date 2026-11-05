@@ -50,8 +50,11 @@ export const api = {
   post: (slug: string) => request<Post>(`/public/posts/${slug}`),
   adminStats: () => request<AdminStats>("/admin/stats"),
   adminPosts: (params?: { status?: string; q?: string }) => {
-    const q = new URLSearchParams(params as Record<string, string>);
-    return request<Post[]>(`/admin/posts?${q}`);
+    const q = new URLSearchParams();
+    if (params?.status) q.set("status", params.status);
+    if (params?.q?.trim()) q.set("q", params.q.trim());
+    const qs = q.toString();
+    return request<Post[]>(`/admin/posts${qs ? `?${qs}` : ""}`);
   },
   adminPost: (id: string) => request<Post>(`/admin/posts/${id}`),
   createPost: (body: PostInput) => request<Post>("/admin/posts", { method: "POST", body: JSON.stringify(body) }),
