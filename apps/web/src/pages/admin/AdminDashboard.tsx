@@ -30,8 +30,17 @@ export function AdminDashboard() {
         <Link to="/admin/publicacoes/nova" className="rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white">
           Nova publicação
         </Link>
+        <Link to="/admin/publicacoes" className="rounded-lg border border-border px-4 py-2 text-sm font-semibold">
+          Gerenciar publicações
+        </Link>
+        <Link to="/admin/categorias" className="rounded-lg border border-border px-4 py-2 text-sm font-semibold">
+          CRUD categorias
+        </Link>
         <Link to="/admin/configuracoes" className="rounded-lg border border-border px-4 py-2 text-sm font-semibold">
           SEO e Google Ads
+        </Link>
+        <Link to="/admin/perfil" className="rounded-lg border border-border px-4 py-2 text-sm font-semibold">
+          Meu perfil
         </Link>
       </div>
     </div>

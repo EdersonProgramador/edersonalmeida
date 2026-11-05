@@ -17,7 +17,13 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, { ...init, headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error ?? "Erro na requisição");
+    const msg =
+      typeof err.error === "string"
+        ? err.error
+        : typeof err.message === "string"
+          ? err.message
+          : res.statusText || "Erro na requisição";
+    throw new Error(msg);
   }
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
@@ -128,6 +134,7 @@ export type Category = {
   icon?: string | null;
   accentColor?: string | null;
   parentId?: string | null;
+  sortOrder?: number;
 };
 
 export type CategoryTree = Category & {
