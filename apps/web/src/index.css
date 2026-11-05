@@ -27,6 +27,15 @@
   }
 }
 
+.prose-legal h1,
+.editor-prose h1 {
+  font-family: var(--font-serif);
+  font-size: 2.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  color: var(--color-navy);
+}
 .prose-legal h2,
 .editor-prose h2 {
   font-family: var(--font-serif);
@@ -52,6 +61,33 @@
 .editor-prose ul {
   margin: 1rem 0 1rem 1.25rem;
   list-style: disc;
+}
+.prose-legal ol,
+.editor-prose ol {
+  margin: 1rem 0 1rem 1.5rem;
+  list-style: decimal;
+}
+.prose-legal hr,
+.editor-prose hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 2px solid var(--color-border);
+}
+.prose-legal code,
+.editor-prose code {
+  font-size: 0.9em;
+  background: #ebe6dc;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+}
+.editor-canvas {
+  max-width: 52rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.0625rem;
+}
+.editor-scroll .ProseMirror-focused {
+  outline: none;
 }
 .prose-legal blockquote,
 .editor-prose blockquote {

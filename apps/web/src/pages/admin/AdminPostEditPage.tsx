@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminSection } from "@/components/admin/AdminSection";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -99,6 +99,11 @@ export function AdminPostEditPage() {
     setForm((f) => ({ ...f, coverImage: url, ogImage: f.ogImage || url }));
   }
 
+  async function onUploadInlineImage(file: File) {
+    const { url } = await api.upload(file);
+    return url;
+  }
+
   function onSubmit(e: FormEvent) {
     e.preventDefault();
     save.mutate(undefined);
@@ -142,9 +147,9 @@ export function AdminPostEditPage() {
         </p>
       ) : null}
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-6">
-          <AdminSection title="Conteúdo principal" description="Título, resumo e corpo do texto.">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="space-y-6 xl:col-start-1">
+          <AdminSection title="Identificação" description="Título e resumo exibidos no site e nas redes.">
             <div className="grid gap-4">
               <label className="text-sm font-medium text-ink">
                 Título
@@ -166,13 +171,20 @@ export function AdminPostEditPage() {
                   placeholder="Aparece em listagens e redes sociais quando não houver meta description."
                 />
               </label>
-              <div>
-                <p className="text-sm font-medium text-ink">Corpo</p>
-                <div className="mt-1.5">
-                  <RichEditor value={form.content} onChange={(content) => setForm({ ...form, content })} />
-                </div>
-              </div>
             </div>
+          </AdminSection>
+
+          <AdminSection
+            title="Corpo da publicação"
+            description="Editor completo: formatação, listas, citações, imagens no texto e modo foco para escrever com mais espaço."
+            flushBody
+            className="overflow-hidden border-navy/10"
+          >
+            <RichEditor
+              value={form.content}
+              onChange={(content) => setForm({ ...form, content })}
+              onUploadImage={onUploadInlineImage}
+            />
           </AdminSection>
 
           <AdminSection title="SEO e descoberta" description="Otimize para buscadores e compartilhamento.">
@@ -259,7 +271,7 @@ export function AdminPostEditPage() {
           </AdminSection>
         </div>
 
-        <aside className="space-y-4 xl:sticky xl:top-6 xl:self-start">
+        <aside className="space-y-4 xl:col-start-2 xl:row-start-1 xl:row-span-2 xl:sticky xl:top-6 xl:self-start">
           <div className="rounded-2xl border border-border bg-navy p-5 text-white shadow-lg">
             <p className="text-xs font-semibold uppercase tracking-wider text-gold-soft">Publicação</p>
             <div className="mt-3 flex items-center gap-2">
