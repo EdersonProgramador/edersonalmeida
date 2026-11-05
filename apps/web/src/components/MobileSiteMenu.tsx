@@ -18,6 +18,7 @@ function mobileNavLinkClass(isActive: boolean) {
 export function MobileSiteMenu({ open, onClose, siteName }: MobileSiteMenuProps) {
   const { pathname } = useLocation();
   const onCloseRef = useRef(onClose);
+  const prevPathRef = useRef(pathname);
   onCloseRef.current = onClose;
 
   useEffect(() => {
@@ -30,6 +31,8 @@ export function MobileSiteMenu({ open, onClose, siteName }: MobileSiteMenuProps)
   }, [open]);
 
   useEffect(() => {
+    if (prevPathRef.current === pathname) return;
+    prevPathRef.current = pathname;
     onCloseRef.current();
   }, [pathname]);
 
@@ -45,7 +48,7 @@ export function MobileSiteMenu({ open, onClose, siteName }: MobileSiteMenuProps)
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] md:hidden" role="dialog" aria-modal="true" aria-label="Menu do site">
+    <div className="fixed inset-0 z-[100] lg:hidden" role="dialog" aria-modal="true" aria-label="Menu do site">
       <button
         type="button"
         className="absolute inset-0 bg-navy/55 backdrop-blur-[2px]"

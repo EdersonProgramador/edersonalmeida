@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, Scale } from "lucide-react";
 import { MobileSiteMenu } from "@/components/MobileSiteMenu";
+import { SiteMobileNavBar } from "@/components/SiteMobileNavBar";
 import { SiteNavLinksDesktop } from "@/components/SiteNavLinks";
 import type { SiteSettings } from "@/lib/api";
 import { SITE_BRANDING } from "@/lib/siteBranding";
@@ -28,13 +29,13 @@ export function SiteHeader({ settings }: { settings?: SiteSettings | null }) {
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-6 text-sm font-medium md:flex" aria-label="Principal">
+          <nav className="hidden items-center gap-6 text-sm font-medium lg:flex" aria-label="Principal">
             <SiteNavLinksDesktop />
           </nav>
 
           <button
             type="button"
-            className="flex shrink-0 items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-navy hover:border-gold hover:text-accent md:hidden"
+            className="flex shrink-0 items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-navy hover:border-gold hover:text-accent lg:hidden"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(true)}
           >
@@ -42,6 +43,7 @@ export function SiteHeader({ settings }: { settings?: SiteSettings | null }) {
             Menu
           </button>
         </div>
+        <SiteMobileNavBar />
       </header>
 
       <MobileSiteMenu open={menuOpen} onClose={() => setMenuOpen(false)} siteName={siteName} />

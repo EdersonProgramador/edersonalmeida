@@ -33,7 +33,7 @@ export function SiteNavLinksDesktop() {
 
 export function SiteNavLinksFooter() {
   return (
-    <nav className="mt-8 border-t border-white/15 pt-6 md:hidden" aria-label="Navegação rápida">
+    <nav className="mt-8 border-t border-white/15 pt-6 lg:hidden" aria-label="Navegação rápida">
       <p className="text-xs font-semibold tracking-wide text-white/50 uppercase">Menu</p>
       <ul className="mt-3 flex flex-col gap-2 text-sm font-medium">
         {SITE_NAV_ITEMS.map((item) => (

@@ -10,7 +10,7 @@
     "build:all": "npm run build:api && npm run build:web",
     "build:web": "npm run build -w @edpersonalmeida/web",
     "build:api": "npm run build -w @edpersonalmeida/api",
-    "vercel-build": "npm run build:web",
+    "vercel-build": "node scripts/write-build-id.mjs && npm run build:web",
     "start": "npm run db:migrate -w @edpersonalmeida/api && npm run start -w @edpersonalmeida/api",
     "start:render": "npm run start -w @edpersonalmeida/api",
     "db:generate": "npm run db:generate -w @edpersonalmeida/api",
