@@ -17,6 +17,7 @@ import { sanitizeHtmlContent } from "./sanitize.js";
 import { estimateReadingMinutes, resolvePublishedAt } from "./post-utils.js";
 import { registerAuth, authenticate } from "./auth-plugin.js";
 import { syncLawAreaCatalog } from "./catalog.js";
+import { repairOrphanPosts } from "./repair-data.js";
 import { syncSiteBranding } from "./siteBranding.js";
 import { toSlug, uniqueSlug } from "./slug.js";
 
@@ -615,6 +616,7 @@ async function ensureBootstrapUser() {
 }
 
 await ensureBootstrapUser();
+await repairOrphanPosts(prisma);
 await getSettings();
 await syncSiteBranding(prisma);
 await syncLawAreaCatalog(prisma);

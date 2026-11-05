@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import { lawAreaCatalog, syncLawAreaCatalog } from "../src/catalog.js";
+import { repairOrphanPosts } from "../src/repair-data.js";
 import { SITE_BRANDING } from "../src/siteBranding.js";
 
 const prisma = new PrismaClient();
@@ -34,6 +35,7 @@ async function main() {
     update: {},
   });
 
+  await repairOrphanPosts(prisma);
   await syncLawAreaCatalog(prisma);
 
   const constSub = await prisma.category.findFirst({
