@@ -17,6 +17,7 @@ import { sanitizeHtmlContent } from "./sanitize.js";
 import { estimateReadingMinutes, resolvePublishedAt } from "./post-utils.js";
 import { registerAuth, authenticate } from "./auth-plugin.js";
 import { syncLawAreaCatalog } from "./catalog.js";
+import { attachAuthorToPost, attachAuthorsToPosts, postCategoryInclude } from "./posts-query.js";
 import { repairOrphanPosts } from "./repair-data.js";
 import { syncSiteBranding } from "./siteBranding.js";
 import { toSlug, uniqueSlug } from "./slug.js";
@@ -50,11 +51,6 @@ await app.register(jwt, { secret: env.JWT_SECRET });
 await app.register(multipart, { limits: { fileSize: 5_000_000 } });
 await app.register(fastifyStatic, { root: uploadRoot, prefix: "/uploads/", decorateReply: false });
 registerAuth(app);
-
-const postInclude = {
-  category: { include: { parent: true } },
-  author: { select: { id: true, name: true, avatarUrl: true, jobTitle: true, oabNumber: true } },
-} satisfies Prisma.PostInclude;
 
 function publicPostWhere(now = new Date()): Prisma.PostWhereInput {
   return {
@@ -195,10 +191,10 @@ app.get("/public/posts", async (request) => {
       : {}),
   };
 
-  const [items, total] = await Promise.all([
+  const [rows, total] = await Promise.all([
     prisma.post.findMany({
       where,
-      include: postInclude,
+      include: postCategoryInclude,
       orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
       skip,
       take,
@@ -206,15 +202,17 @@ app.get("/public/posts", async (request) => {
     prisma.post.count({ where }),
   ]);
 
+  const items = await attachAuthorsToPosts(prisma, rows);
   return { items, total, page: q.page, pageSize: take };
 });
 
 app.get("/public/posts/:slug", async (request, reply) => {
   const { slug } = z.object({ slug: z.string() }).parse(request.params);
-  const post = await prisma.post.findFirst({
+  const row = await prisma.post.findFirst({
     where: { slug, ...publicPostWhere() },
-    include: postInclude,
+    include: postCategoryInclude,
   });
+  const post = await attachAuthorToPost(prisma, row);
   if (!post) return reply.code(404).send({ error: "Publicação não encontrada" });
   return post;
 });
@@ -295,21 +293,23 @@ app.get("/admin/posts", { preHandler: authenticate }, async (request) => {
   const q = z
     .object({ status: z.string().optional(), q: z.string().optional() })
     .parse(request.query);
-  return prisma.post.findMany({
+  const rows = await prisma.post.findMany({
     where: {
       ...(q.status ? { status: q.status as PostStatus } : {}),
       ...(q.q
         ? { OR: [{ title: { contains: q.q, mode: "insensitive" } }, { slug: { contains: q.q, mode: "insensitive" } }] }
         : {}),
     },
-    include: postInclude,
+    include: postCategoryInclude,
     orderBy: [{ updatedAt: "desc" }],
   });
+  return attachAuthorsToPosts(prisma, rows);
 });
 
 app.get("/admin/posts/:id", { preHandler: authenticate }, async (request, reply) => {
   const { id } = z.object({ id: z.string() }).parse(request.params);
-  const post = await prisma.post.findUnique({ where: { id }, include: postInclude });
+  const row = await prisma.post.findUnique({ where: { id }, include: postCategoryInclude });
+  const post = await attachAuthorToPost(prisma, row);
   if (!post) return reply.code(404).send({ error: "Não encontrado" });
   return post;
 });
@@ -329,7 +329,7 @@ app.post("/admin/posts", { preHandler: authenticate }, async (request) => {
     publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,
     scheduledFor: body.scheduledFor ? new Date(body.scheduledFor) : null,
   });
-  return prisma.post.create({
+  const created = await prisma.post.create({
     data: {
       title: body.title,
       slug,
@@ -352,8 +352,9 @@ app.post("/admin/posts", { preHandler: authenticate }, async (request) => {
       categoryId: body.categoryId,
       authorId: request.user.sub,
     },
-    include: postInclude,
+    include: postCategoryInclude,
   });
+  return attachAuthorToPost(prisma, created);
 });
 
 app.patch("/admin/posts/:id", { preHandler: authenticate }, async (request, reply) => {
@@ -389,7 +390,7 @@ app.patch("/admin/posts/:id", { preHandler: authenticate }, async (request, repl
         : existing.scheduledFor,
   });
 
-  return prisma.post.update({
+  const updated = await prisma.post.update({
     where: { id },
     data: {
       title: body.title,
@@ -417,8 +418,9 @@ app.patch("/admin/posts/:id", { preHandler: authenticate }, async (request, repl
       noIndex: body.noIndex,
       categoryId: body.categoryId,
     },
-    include: postInclude,
+    include: postCategoryInclude,
   });
+  return attachAuthorToPost(prisma, updated);
 });
 
 app.delete("/admin/posts/:id", { preHandler: authenticate }, async (request, reply) => {
