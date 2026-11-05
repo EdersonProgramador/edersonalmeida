@@ -4,10 +4,16 @@ import { CategoryCard } from "@/components/CategoryCard";
 import { PostCard } from "@/components/PostCard";
 import { Seo } from "@/components/Seo";
 import { api } from "@/lib/api";
+import { defaultLawAreas } from "@/lib/defaultLawAreas";
 
 export function HomePage() {
   const settingsQ = useQuery({ queryKey: ["settings"], queryFn: api.publicSettings });
-  const catsQ = useQuery({ queryKey: ["categories"], queryFn: api.categories });
+  const catsQ = useQuery({
+    queryKey: ["categories"],
+    queryFn: api.categories,
+    retry: 1,
+  });
+  const categories = catsQ.data?.length ? catsQ.data : defaultLawAreas;
   const featuredQ = useQuery({
     queryKey: ["posts", "featured"],
     queryFn: () => api.posts({ featured: true, page: 1 }),
@@ -60,7 +66,7 @@ export function HomePage() {
           <h2 className="font-serif text-3xl text-navy">Áreas do Direito</h2>
           <p className="mt-2 max-w-2xl text-muted">Navegue por categorias e subcategorias com visual profissional.</p>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
-            {(catsQ.data ?? []).map((c) => (
+            {categories.map((c) => (
               <CategoryCard key={c.id} category={c} />
             ))}
           </div>
