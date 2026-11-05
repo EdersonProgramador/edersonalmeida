@@ -1,3 +1,4 @@
+import { SiteNavLinksFooter } from "@/components/SiteNavLinks";
 import type { SiteSettings } from "@/lib/api";
 
 export function SiteFooter({ settings }: { settings?: SiteSettings | null }) {
@@ -16,6 +17,7 @@ export function SiteFooter({ settings }: { settings?: SiteSettings | null }) {
             </a>
           </p>
         ) : null}
+        <SiteNavLinksFooter />
         <p className="mt-8 text-xs text-white/50">© {new Date().getFullYear()} — Conteúdo jurídico informativo.</p>
       </div>
     </footer>

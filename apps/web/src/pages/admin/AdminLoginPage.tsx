@@ -1,11 +1,15 @@
+import { useQuery } from "@tanstack/react-query";
 import { FormEvent, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { SiteHeader } from "@/components/SiteHeader";
+import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
 export function AdminLoginPage() {
   const { user, login } = useAuth();
   const nav = useNavigate();
+  const settingsQ = useQuery({ queryKey: ["settings"], queryFn: api.publicSettings });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +31,9 @@ export function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-navy px-4">
+    <div className="flex min-h-screen flex-col bg-navy">
+      <SiteHeader settings={settingsQ.data} />
+      <div className="flex flex-1 items-center justify-center px-4 py-8">
       <form onSubmit={onSubmit} className="w-full max-w-md rounded-2xl bg-surface p-8 shadow-xl">
         <h1 className="font-serif text-3xl text-navy">Acesso administrativo</h1>
         <p className="mt-2 text-sm text-muted">Portal jurídico — credenciais seguras via JWT.</p>
@@ -57,6 +63,7 @@ export function AdminLoginPage() {
           </Link>
         </p>
       </form>
+      </div>
     </div>
   );
 }
