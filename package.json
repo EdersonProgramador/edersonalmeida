@@ -6,10 +6,12 @@
   ],
   "scripts": {
     "dev": "concurrently -n web,api -c cyan,magenta \"npm run dev -w @edpersonalmeida/web\" \"npm run dev -w @edpersonalmeida/api\"",
-    "build": "npm run build -w @edpersonalmeida/api && npm run build -w @edpersonalmeida/web",
+    "build": "npm run build:api",
+    "build:all": "npm run build:api && npm run build:web",
     "build:web": "npm run build -w @edpersonalmeida/web",
     "build:api": "npm run build -w @edpersonalmeida/api",
     "vercel-build": "npm run build:web",
+    "start": "npm run db:migrate -w @edpersonalmeida/api && npm run start -w @edpersonalmeida/api",
     "start:render": "npm run start -w @edpersonalmeida/api",
     "db:generate": "npm run db:generate -w @edpersonalmeida/api",
     "db:migrate": "npm run db:migrate -w @edpersonalmeida/api",
