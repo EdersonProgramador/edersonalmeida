@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { api } from "@/lib/api";
 
 export function AdminDashboard() {
@@ -7,22 +8,24 @@ export function AdminDashboard() {
 
   const s = statsQ.data;
   const cards = [
-    ["Publicados", s?.published, "text-emerald-700"],
-    ["Rascunhos", s?.draft, "text-muted"],
-    ["Em revisão", s?.review, "text-amber-700"],
-    ["Agendados", s?.scheduled, "text-accent"],
-    ["Categorias", s?.categories, "text-navy"],
+    ["Publicados", s?.published, "from-emerald-600 to-emerald-800"],
+    ["Rascunhos", s?.draft, "from-stone-500 to-stone-700"],
+    ["Em revisão", s?.review, "from-amber-500 to-amber-700"],
+    ["Agendados", s?.scheduled, "from-sky-600 to-sky-800"],
+    ["Categorias", s?.categories, "from-navy to-accent"],
   ] as const;
 
   return (
     <div>
-      <h1 className="font-serif text-3xl text-navy">Dashboard editorial</h1>
-      <p className="mt-2 text-muted">Fluxo profissional: rascunho → revisão → agendamento → publicação.</p>
+      <AdminPageHeader
+        title="Dashboard editorial"
+        subtitle="Visão geral do acervo e atalhos para publicação, categorias e SEO."
+      />
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map(([label, value, color]) => (
-          <div key={label} className="rounded-xl border border-border bg-paper p-5">
-            <p className="text-sm text-muted">{label}</p>
-            <p className={`mt-1 text-3xl font-semibold ${color}`}>{value ?? "—"}</p>
+        {cards.map(([label, value, gradient]) => (
+          <div key={label} className={`rounded-2xl bg-gradient-to-br ${gradient} p-5 text-white shadow-md`}>
+            <p className="text-sm text-white/80">{label}</p>
+            <p className="mt-1 font-serif text-4xl font-semibold">{value ?? "—"}</p>
           </div>
         ))}
       </div>

@@ -173,6 +173,8 @@ export type Post = {
   categoryId: string;
   category: Category & { parent?: Category | null };
   author: Pick<User, "id" | "name" | "avatarUrl" | "jobTitle" | "oabNumber">;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type PostsPage = { items: Post[]; total: number; page: number; pageSize: number };
