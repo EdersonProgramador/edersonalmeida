@@ -120,3 +120,46 @@
   height: 0;
   pointer-events: none;
 }
+
+/* Conteúdo salvo — paridade com editor Academia (listas, checklists) */
+.prose-legal ul[data-type="taskList"],
+.prose-legal .fichamento-list--check {
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0.5rem 0.75rem 0.5rem 1rem;
+  border-left: 3px solid rgb(74 124 89 / 0.45);
+  background: rgb(74 124 89 / 0.05);
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.prose-legal ul[data-type="taskList"] li {
+  display: grid;
+  grid-template-columns: 1.125rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: start;
+  margin: 0.35rem 0;
+}
+
+.prose-legal ul[data-type="taskList"] li label input {
+  margin-top: 0.35rem;
+  accent-color: #2d5a3d;
+}
+
+.prose-legal .fichamento-list--bullet {
+  border-left: 3px solid rgb(30 90 138 / 0.4);
+  background: rgb(30 90 138 / 0.04);
+  padding-left: 1.25rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.prose-legal .fichamento-list--ordered {
+  border-left: 3px solid rgb(26 39 68 / 0.3);
+  background: rgb(26 39 68 / 0.04);
+  padding-left: 1.25rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.prose-legal mark {
+  border-radius: 0.15rem;
+  padding: 0 0.1em;
+}

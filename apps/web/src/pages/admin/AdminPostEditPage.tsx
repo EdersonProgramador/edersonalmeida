@@ -176,7 +176,7 @@ export function AdminPostEditPage() {
 
           <AdminSection
             title="Corpo da publicação"
-            description="Editor completo: formatação, listas, citações, imagens no texto e modo foco para escrever com mais espaço."
+            description="Editor da Academia: estilos, fontes, cores, listas, checklists, alinhamento, entrelinhas e imagens no texto."
             flushBody
             className="overflow-hidden border-navy/10"
           >
